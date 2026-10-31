@@ -2,9 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowDownLeft, ArrowUpRight, Wallet } from "lucide-react";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis } from "recharts";
-import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import EmptyState from "@/components/EmptyState";
+import { getEarnings } from "@/lib/order-fns";
 import { ORDER_FLOW } from "@/lib/constants";
 import { formatDate, formatINR } from "@/lib/format";
 
@@ -22,26 +22,33 @@ const monthKey = (value) => {
 function EarningsPage() {
   const { user } = useAuth();
   const [orders, setOrders] = useState([]);
+  const [totals, setTotals] = useState({ earned: 0, pending: 0, completedCount: 0 });
   const [loading, setLoading] = useState(true);
 
+  // The ledger and its totals come from the server, which reads this seller's
+  // orders itself — the browser never counts its own earnings.
   useEffect(() => {
     let alive = true;
-    base44.entities.Order.list({ sort: "-created_date", limit: 100 }).then((result) => {
-      if (!alive) return;
-      const rows = Array.isArray(result) ? result : result?.items ?? [];
-      setOrders(rows.filter((order) => order.seller_id === user?.id));
-      setLoading(false);
-    });
+    getEarnings({ data: {} })
+      .then((result) => {
+        if (!alive) return;
+        setOrders(result.orders ?? []);
+        setTotals({
+          earned: result.earned ?? 0,
+          pending: result.pending ?? 0,
+          completedCount: result.completedCount ?? 0,
+        });
+        setLoading(false);
+      })
+      .catch(() => {
+        if (alive) setLoading(false);
+      });
     return () => {
       alive = false;
     };
   }, [user?.id]);
 
-  const earned = orders.filter((order) => order.status === "completed").reduce((sum, order) => sum + (order.price || 0), 0);
-  const pending = orders
-    .filter((order) => ["requested", "in_progress", "delivered"].includes(order.status))
-    .reduce((sum, order) => sum + (order.price || 0), 0);
-  const completedCount = orders.filter((order) => order.status === "completed").length;
+  const { earned, pending, completedCount } = totals;
 
   const monthly = orders
     .filter((order) => order.status === "completed")

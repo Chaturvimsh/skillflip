@@ -114,7 +114,9 @@ export const acceptProposal = createServerFn({ method: "POST" })
     const conversation = await loadOr404(context, "Conversation", proposal.conversation_id, "Conversation not found");
     const creator = participantSide(conversation, proposal.creator_id);
 
-    const order = await base.entities.Order.create({
+    // Orders are admin-only through the entity API; accepting a proposal is one of
+    // the vetted server paths that writes one.
+    const order = await base.asServiceRole.entities.Order.create({
       service_title: request.title,
       service_image: "",
       request_id: request.id,

@@ -1,47 +1,34 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { base44 } from "@/api/base44Client";
-import { useAuth } from "@/lib/AuthContext";
-import { useMyProfile } from "@/lib/useMyProfile";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatINR } from "@/lib/format";
+import { createOrder } from "@/lib/order-fns";
 
 export default function OrderDialog({ service, open, onOpenChange }) {
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
-  const { user } = useAuth();
-  const { profile } = useMyProfile();
   const navigate = useNavigate();
 
   const submit = async (event) => {
     event.preventDefault();
     setSaving(true);
-    const due = new Date(Date.now() + (service.delivery_days || 3) * 86400000).toISOString().slice(0, 10);
     try {
-      await base44.entities.Order.create({
-        service_id: service.id,
-        service_title: service.title,
-        service_image: service.image_url || "",
-        buyer_id: user.id,
-        buyer_name: profile?.display_name || user.full_name || "Me",
-        buyer_username: profile?.username || "",
-        seller_id: service.creator_id,
-        seller_name: service.creator_name || "Creator",
-        seller_username: service.creator_username || "",
-        price: service.price,
-        due_date: due,
-        notes: notes.trim(),
-        status: "requested",
-      });
+      await createOrder({ data: { serviceId: service.id, notes: notes.trim() } });
       onOpenChange(false);
       setNotes("");
       toast("Request sent", { description: `${service.creator_name} will reply in your messages.` });
       navigate({ to: "/orders" });
-    } catch {
-      toast.error("Couldn't send the request. Please try again.");
+    } catch (error) {
+      toast.error(
+        error?.status === 409
+          ? "You already have an open request for this skill."
+          : error?.status === 400
+            ? "This is your own skill."
+            : "Couldn't send the request. Please try again.",
+      );
     } finally {
       setSaving(false);
     }

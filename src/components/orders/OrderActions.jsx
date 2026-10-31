@@ -10,8 +10,8 @@ export default function OrderActions({ order, role, busy, onUpdate, onMessage, o
   const actions = [];
 
   if (role === "seller" && order.status === "requested") {
-    actions.push({ label: "Accept", onClick: () => onUpdate(order.id, "in_progress"), primary: true });
-    actions.push({ label: "Decline", onClick: () => onUpdate(order.id, "declined") });
+    actions.push({ label: "Accept", onClick: () => onUpdate(order.id, "accept"), primary: true });
+    actions.push({ label: "Decline", onClick: () => onUpdate(order.id, "decline") });
   }
 
   if (role === "seller" && ["in_progress", "delivered"].includes(order.status)) {
@@ -29,7 +29,7 @@ export default function OrderActions({ order, role, busy, onUpdate, onMessage, o
   }
 
   if (role === "buyer" && order.status === "requested") {
-    actions.push({ label: "Cancel request", onClick: () => onUpdate(order.id, "declined") });
+    actions.push({ label: "Cancel request", onClick: () => onUpdate(order.id, "cancel") });
   }
 
   return (

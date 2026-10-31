@@ -6,7 +6,7 @@ import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import EmptyState from "@/components/EmptyState";
 import OrderCard from "@/components/orders/OrderCard";
-import { approveDelivery } from "@/lib/order-fns";
+import { approveDelivery, changeOrderStatus } from "@/lib/order-fns";
 import { startConversation } from "@/lib/skillflip";
 
 export const Route = createFileRoute("/_authed/orders")({
@@ -31,14 +31,14 @@ function OrdersPage() {
     load();
   }, [user?.id]);
 
-  const update = async (id, status) => {
+  const update = async (id, action) => {
     setBusy(true);
     try {
-      await base44.entities.Order.update(id, { status });
+      await changeOrderStatus({ data: { orderId: id, action } });
       await load();
-      toast.success(status === "completed" ? "Order completed" : "Order updated");
-    } catch {
-      toast.error("Couldn't update this order.");
+      toast.success(action === "accept" ? "Request accepted" : action === "decline" ? "Request declined" : "Request cancelled");
+    } catch (error) {
+      toast.error(error?.status === 409 ? "This request already moved on." : "Couldn't update this order.");
     } finally {
       setBusy(false);
     }

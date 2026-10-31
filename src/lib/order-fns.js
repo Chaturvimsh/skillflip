@@ -3,10 +3,11 @@ import { z } from "zod";
 import { requireUser } from "@/lib/auth-middleware";
 
 /**
- * Order delivery is the only part of an order both sides change on purpose:
- * the seller hands work over, the buyer approves it or asks for changes. Every
- * one of these runs on the server and re-checks who is calling, because the
- * order's own access rules let either party edit it.
+ * Every order mutation lives here and runs on the server. The Order entity's own
+ * access rules let only admins create, update or delete a record, so these
+ * handlers — which check the caller, the side they are on and the current status,
+ * then write with the service role — are the only way an order can change.
+ * Price, buyer and seller are fixed at creation and no handler accepts them.
  */
 
 const DeliverableInput = z.object({
@@ -14,6 +15,8 @@ const DeliverableInput = z.object({
   file_name: z.string().min(1).max(120),
   content_type: z.string().max(120).optional(),
 });
+
+const OPEN_STATUSES = ["requested", "in_progress", "delivered"];
 
 const fail = (status, message) => Object.assign(new Error(message), { status });
 
@@ -30,6 +33,107 @@ const loadOrder = async (context, orderId) => {
   if (!order) throw fail(404, "Order not found");
   return order;
 };
+
+const saveOrder = (context, orderId, patch) =>
+  context.getBase44().asServiceRole.entities.Order.update(orderId, patch);
+
+const buyerProfile = async (base, userId) => {
+  const page = await base.entities.Profile.filter({ user_id: userId }, { limit: 1 });
+  return page?.items?.[0] ?? null;
+};
+
+const dueDateIn = (days) => new Date(Date.now() + days * 86400000).toISOString().slice(0, 10);
+
+// A request against a listed skill. Everything money- or identity-shaped is read
+// from the service record, never from the caller.
+export const createOrder = createServerFn({ method: "POST" })
+  .middleware([requireUser])
+  .validator(
+    z.object({
+      serviceId: z.string().min(1).max(120),
+      notes: z.string().max(1000).optional(),
+    }),
+  )
+  .handler(async ({ data, context }) => {
+    const base = context.getBase44();
+    const service = await base.entities.Service.get(data.serviceId).catch((error) => {
+      if (error?.status === 404) return null;
+      throw error;
+    });
+    if (!service || service.active === false) throw fail(404, "This skill is no longer available");
+    if (!service.creator_id) throw fail(409, "This skill isn't bookable right now");
+    if (service.creator_id === context.user.id) throw fail(400, "This is your own skill");
+
+    const price = Number(service.price);
+    if (!Number.isFinite(price) || price <= 0) throw fail(409, "This skill has no valid price");
+
+    const open = await base.asServiceRole.entities.Order.filter(
+      { buyer_id: context.user.id, service_id: service.id, status: { $in: OPEN_STATUSES } },
+      { limit: 1 },
+    );
+    if ((open?.items ?? []).length) throw fail(409, "You already have an open request for this skill");
+
+    const profile = await buyerProfile(base, context.user.id);
+    const days = Math.min(Math.max(Math.round(Number(service.delivery_days) || 3), 1), 120);
+
+    const order = await base.asServiceRole.entities.Order.create({
+      service_id: service.id,
+      service_title: service.title,
+      service_image: service.image_url || "",
+      buyer_id: context.user.id,
+      buyer_name: profile?.display_name || context.user.full_name || "Buyer",
+      buyer_username: profile?.username || "",
+      seller_id: service.creator_id,
+      seller_name: service.creator_name || "Creator",
+      seller_username: service.creator_username || "",
+      price,
+      due_date: dueDateIn(days),
+      notes: (data.notes ?? "").trim(),
+      status: "requested",
+      deliverables: [],
+    });
+
+    return order;
+  });
+
+// The three answers a request can get while it is still "requested".
+const STATUS_ACTIONS = {
+  accept: {
+    side: "seller",
+    from: ["requested"],
+    to: "in_progress",
+    denied: "Only the seller can accept this request",
+    stale: "This request has already been answered",
+  },
+  decline: {
+    side: "seller",
+    from: ["requested"],
+    to: "declined",
+    denied: "Only the seller can decline this request",
+    stale: "This request has already been answered",
+  },
+  cancel: {
+    side: "buyer",
+    from: ["requested"],
+    to: "declined",
+    denied: "Only the buyer can cancel this request",
+    stale: "This request can no longer be cancelled",
+  },
+};
+
+export const changeOrderStatus = createServerFn({ method: "POST" })
+  .middleware([requireUser])
+  .validator(z.object({ orderId: z.string().min(1), action: z.enum(["accept", "decline", "cancel"]) }))
+  .handler(async ({ data, context }) => {
+    const rule = STATUS_ACTIONS[data.action];
+    const order = await loadOrder(context, data.orderId);
+
+    if (order[`${rule.side}_id`] !== context.user.id) throw fail(403, rule.denied);
+    if (!rule.from.includes(order.status)) throw fail(409, rule.stale);
+
+    await saveOrder(context, order.id, { status: rule.to });
+    return { id: order.id, status: rule.to };
+  });
 
 export const submitDelivery = createServerFn({ method: "POST" })
   .middleware([requireUser])
@@ -59,7 +163,7 @@ export const submitDelivery = createServerFn({ method: "POST" })
 
     if (!deliverables.length && !message) throw fail(400, "Attach a file or write a delivery message");
 
-    await context.getBase44().entities.Order.update(order.id, {
+    await saveOrder(context, order.id, {
       deliverables,
       delivery_message: message,
       delivered_at: now,
@@ -78,8 +182,11 @@ export const approveDelivery = createServerFn({ method: "POST" })
     if (order.buyer_id !== context.user.id) throw fail(403, "Only the buyer can approve this order");
     if (order.status !== "delivered") throw fail(409, "There is no delivery to approve");
 
+    const submitted = (order.deliverables ?? []).length > 0 || (order.delivery_message ?? "").trim().length > 0;
+    if (!submitted) throw fail(409, "There is no delivery to approve");
+
     const now = new Date().toISOString();
-    await context.getBase44().entities.Order.update(order.id, {
+    await saveOrder(context, order.id, {
       status: "completed",
       approved_at: now,
       revision_note: "",
@@ -97,7 +204,7 @@ export const requestRevision = createServerFn({ method: "POST" })
     if (order.status !== "delivered") throw fail(409, "There is no delivery to revise");
 
     const now = new Date().toISOString();
-    await context.getBase44().entities.Order.update(order.id, {
+    await saveOrder(context, order.id, {
       status: "in_progress",
       revision_note: (data.note ?? "").trim(),
       revision_requested_at: now,
@@ -121,4 +228,25 @@ export const getDeliverableUrl = createServerFn({ method: "POST" })
       .asServiceRole.integrations.Core.CreateFileSignedUrl({ file_uri: data.fileUri, expires_in: 600 });
 
     return { signed_url };
+  });
+
+// The earnings ledger, totalled from the orders themselves as the signed-in
+// seller — the browser never adds up its own numbers.
+export const getEarnings = createServerFn({ method: "GET" })
+  .middleware([requireUser])
+  .validator(z.object({}))
+  .handler(async ({ context }) => {
+    const page = await context
+      .getBase44()
+      .asServiceRole.entities.Order.filter({ seller_id: context.user.id }, { sort: "-created_date", limit: 200 });
+    const orders = page?.items ?? [];
+    const total = (list) => list.reduce((sum, order) => sum + Number(order.price || 0), 0);
+    const completed = orders.filter((order) => order.status === "completed");
+
+    return {
+      orders,
+      earned: total(completed),
+      pending: total(orders.filter((order) => OPEN_STATUSES.includes(order.status))),
+      completedCount: completed.length,
+    };
   });
