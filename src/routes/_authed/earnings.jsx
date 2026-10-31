@@ -63,22 +63,22 @@ function EarningsPage() {
         <p className="text-sm text-muted-foreground">What your skills have brought in so far.</p>
       </header>
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        <div className="rounded-[26px] bg-foreground p-5 text-background">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div className="col-span-2 rounded-[24px] bg-foreground p-4 text-background sm:col-span-1 sm:rounded-[26px] sm:p-5">
           <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-background/60">
             <ArrowDownLeft className="h-3.5 w-3.5" /> Earned
           </span>
-          <p className="mt-3 font-display text-[30px] font-extrabold leading-none">{formatINR(earned)}</p>
+          <p className="mt-3 font-display text-[26px] font-extrabold leading-none sm:text-[30px]">{formatINR(earned)}</p>
         </div>
-        <div className="rounded-[26px] border border-border/80 bg-card p-5">
+        <div className="rounded-[24px] border border-border/80 bg-card p-4 sm:rounded-[26px] sm:p-5">
           <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             <ArrowUpRight className="h-3.5 w-3.5" /> In progress
           </span>
-          <p className="mt-3 font-display text-[30px] font-extrabold leading-none">{formatINR(pending)}</p>
+          <p className="mt-3 font-display text-[26px] font-extrabold leading-none sm:text-[30px]">{formatINR(pending)}</p>
         </div>
-        <div className="rounded-[26px] border border-border/80 bg-accent/30 p-5">
+        <div className="rounded-[24px] border border-border/80 bg-accent/30 p-4 sm:rounded-[26px] sm:p-5">
           <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground/60">Gigs completed</span>
-          <p className="mt-3 font-display text-[30px] font-extrabold leading-none">{completedCount}</p>
+          <p className="mt-3 font-display text-[26px] font-extrabold leading-none sm:text-[30px]">{completedCount}</p>
         </div>
       </div>
 
@@ -121,7 +121,7 @@ function EarningsPage() {
               return (
                 <div
                   key={order.id}
-                  className={`flex items-center justify-between gap-3 px-5 py-3.5 ${index > 0 ? "border-t border-border/70" : ""}`}
+                  className={`flex items-center justify-between gap-3 px-4 py-3.5 sm:px-5 ${index > 0 ? "border-t border-border/70" : ""}`}
                 >
                   <div className="min-w-0">
                     <p className="truncate text-[13px] font-semibold">{order.service_title}</p>
