@@ -1,0 +1,99 @@
+{
+  "name": "Order",
+  "type": "object",
+  "properties": {
+    "service_id": {
+      "type": "string"
+    },
+    "service_title": {
+      "type": "string"
+    },
+    "service_image": {
+      "type": "string"
+    },
+    "buyer_id": {
+      "type": "string"
+    },
+    "buyer_name": {
+      "type": "string"
+    },
+    "buyer_username": {
+      "type": "string"
+    },
+    "seller_id": {
+      "type": "string"
+    },
+    "seller_name": {
+      "type": "string"
+    },
+    "seller_username": {
+      "type": "string"
+    },
+    "price": {
+      "type": "number"
+    },
+    "due_date": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "requested",
+        "in_progress",
+        "delivered",
+        "completed",
+        "declined"
+      ],
+      "default": "requested"
+    }
+  },
+  "required": [
+    "service_title",
+    "price",
+    "buyer_id",
+    "seller_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.buyer_id": "{{user.id}}"
+        },
+        {
+          "data.seller_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.buyer_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "data.buyer_id": "{{user.id}}"
+        },
+        {
+          "data.seller_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

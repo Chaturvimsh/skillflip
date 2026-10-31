@@ -1,0 +1,84 @@
+{
+  "name": "Post",
+  "type": "object",
+  "properties": {
+    "media_url": {
+      "type": "string"
+    },
+    "media_type": {
+      "type": "string",
+      "enum": [
+        "image",
+        "video"
+      ],
+      "default": "image"
+    },
+    "caption": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "creator_name": {
+      "type": "string"
+    },
+    "creator_username": {
+      "type": "string"
+    },
+    "creator_avatar": {
+      "type": "string"
+    },
+    "service_id": {
+      "type": "string"
+    },
+    "service_title": {
+      "type": "string"
+    },
+    "service_price": {
+      "type": "number"
+    },
+    "service_delivery_days": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "media_url",
+    "caption"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

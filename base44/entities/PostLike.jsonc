@@ -1,0 +1,23 @@
+{
+  "name": "PostLike",
+  "type": "object",
+  "properties": {
+    "post_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "post_id"
+  ],
+  "rls": {
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}
