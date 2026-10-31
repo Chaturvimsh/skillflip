@@ -41,12 +41,12 @@ function SkillsPage() {
 
   return (
     <div className="space-y-7">
-      <header className="space-y-5 rounded-[32px] border border-border/70 bg-card px-6 py-8 md:px-10 md:py-10">
+      <header className="space-y-4 rounded-[26px] border border-border/70 bg-card px-5 py-7 sm:space-y-5 md:rounded-[32px] md:px-10 md:py-10">
         <div className="max-w-2xl space-y-2">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
             <Sparkles className="h-3.5 w-3.5" /> Find a skill
           </span>
-          <h1 className="text-[30px] font-extrabold leading-[1.02] md:text-[44px]">
+          <h1 className="text-[26px] font-extrabold leading-[1.06] sm:text-[32px] md:text-[44px] md:leading-[1.02]">
             Somebody out there can make exactly what you need.
           </h1>
           <p className="text-sm leading-relaxed text-muted-foreground">
@@ -65,12 +65,13 @@ function SkillsPage() {
         </div>
       </header>
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-3">
         <CategoryChips
+          className="w-full sm:w-auto"
           value={category}
           onChange={(next) => navigate({ to: "/skills", search: { q: q || undefined, category: next }, replace: true })}
         />
-        <p className="text-[12px] font-medium text-muted-foreground">
+        <p className="shrink-0 text-[12px] font-medium text-muted-foreground">
           {services.length} {services.length === 1 ? "creator" : "creators"} available
         </p>
       </div>
@@ -82,7 +83,7 @@ function SkillsPage() {
           description="Try another word or category — or be the first to offer this skill yourself."
         />
       ) : (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
           {services.map((service) => (
             <ServiceCard key={service.id} service={service} />
           ))}

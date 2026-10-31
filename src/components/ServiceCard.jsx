@@ -32,16 +32,16 @@ export default function ServiceCard({ service }) {
 
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div className="space-y-1">
-          <h3 className="line-clamp-2 text-[15px] font-semibold leading-snug">{service.title}</h3>
-          <p className="text-[11px] text-muted-foreground">
+          <h3 className="line-clamp-2 text-base font-semibold leading-snug">{service.title}</h3>
+          <p className="text-xs text-muted-foreground">
             by @{service.creator_username || "creator"} · delivers in {service.delivery_days || 3} days
           </p>
         </div>
 
         <div className="mt-auto flex items-end justify-between gap-2 pt-1">
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 items-center gap-2">
             <Avatar name={service.creator_name} src={service.creator_avatar} size="xs" />
-            <span className="text-[11px] font-medium text-foreground/80">{service.creator_name}</span>
+            <span className="truncate text-xs font-medium text-foreground/80">{service.creator_name}</span>
           </div>
           <div className="text-right">
             <p className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground">from</p>

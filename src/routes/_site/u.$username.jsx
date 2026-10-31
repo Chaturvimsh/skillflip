@@ -57,7 +57,7 @@ function ProfilePage() {
 
   return (
     <div className="space-y-7">
-      <header className="overflow-hidden rounded-[32px] border border-border/80 bg-card">
+      <header className="overflow-hidden rounded-[26px] border border-border/80 bg-card md:rounded-[32px]">
         <div className="relative h-32 bg-gradient-to-r from-primary via-[#8B6BFF] to-accent md:h-44">
           {profile.banner_url && (
             <Image src={profile.banner_url} alt="" fittingType="fill" className="h-full w-full object-cover" />
@@ -71,7 +71,7 @@ function ProfilePage() {
               {isMe ? (
                 <Link
                   to="/settings"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-foreground/15 px-4 py-2 text-[13px] font-semibold transition-colors hover:bg-secondary"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-foreground/15 px-4 py-2.5 text-[13px] font-semibold transition-colors hover:bg-secondary sm:py-2"
                 >
                   <Pencil className="h-3.5 w-3.5" /> Edit profile
                 </Link>
@@ -79,7 +79,7 @@ function ProfilePage() {
                 <button
                   type="button"
                   onClick={message}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-foreground px-4 py-2 text-[13px] font-semibold text-background transition-transform hover:-translate-y-0.5"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-foreground px-4 py-2.5 text-[13px] font-semibold text-background transition-transform hover:-translate-y-0.5 sm:py-2"
                 >
                   <MessageCircle className="h-3.5 w-3.5" /> Message
                 </button>
@@ -89,7 +89,7 @@ function ProfilePage() {
 
           <div className="mt-4 space-y-3">
             <div>
-              <h1 className="text-2xl font-extrabold leading-tight md:text-[32px]">{profile.display_name}</h1>
+              <h1 className="break-words text-2xl font-extrabold leading-tight md:text-[32px]">{profile.display_name}</h1>
               <p className="text-[13px] text-muted-foreground">@{profile.username}</p>
             </div>
 
@@ -143,7 +143,7 @@ function ProfilePage() {
             }
           />
         ) : (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
             {services.map((service) => (
               <ServiceCard key={service.id} service={service} />
             ))}
