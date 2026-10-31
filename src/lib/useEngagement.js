@@ -23,8 +23,10 @@ export function useEngagement() {
     Promise.all([base44.entities.PostLike.list(), base44.entities.SavedPost.list()])
       .then(([likes, saves]) => {
         if (!alive) return;
-        setLiked(new Set((likes ?? []).map((row) => row.post_id)));
-        setSaved(new Set((saves ?? []).map((row) => row.post_id)));
+        const likeRows = Array.isArray(likes) ? likes : likes?.items ?? [];
+        const saveRows = Array.isArray(saves) ? saves : saves?.items ?? [];
+        setLiked(new Set(likeRows.map((row) => row.post_id)));
+        setSaved(new Set(saveRows.map((row) => row.post_id)));
       })
       .catch(() => {});
     return () => {
@@ -49,7 +51,8 @@ export function useEngagement() {
       bump(postId, key, isOn ? -1 : 1);
       try {
         if (isOn) {
-          const rows = await base44.entities[collection].filter({ post_id: postId });
+          const result = await base44.entities[collection].filter({ post_id: postId });
+          const rows = Array.isArray(result) ? result : result?.items ?? [];
           await Promise.all(rows.map((row) => base44.entities[collection].delete(row.id)));
         } else {
           await base44.entities[collection].create({ post_id: postId });

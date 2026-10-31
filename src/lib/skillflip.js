@@ -35,10 +35,16 @@ export async function startConversation({ me, other, contextTitle }) {
   if (me.id === other.id) return null;
 
   const existing = await base44.entities.Conversation.filter(
-    { participant_ids: { $all: [me.id, other.id] } },
-    { limit: 1 },
+    { participant_ids: { $in: [other.id] } },
+    { limit: 20 },
   );
-  if (existing?.items?.length) return existing.items[0].id;
+  const already = (existing?.items ?? []).find(
+    (conversation) =>
+      Array.isArray(conversation.participant_ids) &&
+      conversation.participant_ids.includes(me.id) &&
+      conversation.participant_ids.includes(other.id),
+  );
+  if (already) return already.id;
 
   const profile = await base44.entities.Profile.filter({ user_id: me.id }, { limit: 1 });
   const myProfile = profile?.items?.[0];
