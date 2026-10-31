@@ -91,14 +91,14 @@ export default function ProfileForm() {
 
   return (
     <form onSubmit={submit} className="space-y-6">
-      <div className="flex items-center gap-4 rounded-[28px] border border-border/80 bg-card p-5">
-        <button type="button" onClick={() => fileRef.current?.click()} className="relative">
+      <div className="flex flex-col items-start gap-3 rounded-[24px] border border-border/80 bg-card p-4 sm:flex-row sm:items-center sm:gap-4 sm:rounded-[28px] sm:p-5">
+        <button type="button" onClick={() => fileRef.current?.click()} className="relative shrink-0">
           <Avatar name={form.display_name || "You"} src={form.avatar_url} size="xl" />
           <span className="absolute -bottom-1 -right-1 grid h-8 w-8 place-items-center rounded-full bg-foreground text-background">
             <Camera className="h-4 w-4" />
           </span>
         </button>
-        <div>
+        <div className="min-w-0">
           <p className="text-[14px] font-semibold">{uploading ? "Uploading…" : "Your profile photo"}</p>
           <p className="text-[12px] leading-relaxed text-muted-foreground">
             Stored publicly so people can recognise you across the feed.
@@ -107,11 +107,11 @@ export default function ProfileForm() {
         <input ref={fileRef} type="file" accept="image/*" onChange={onAvatar} className="hidden" />
       </div>
 
-      <div className="space-y-5 rounded-[28px] border border-border/80 bg-card p-5">
+      <div className="space-y-5 rounded-[24px] border border-border/80 bg-card p-4 sm:rounded-[28px] sm:p-5">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="display_name">Name</Label>
-            <Input id="display_name" value={form.display_name} onChange={set("display_name")} className="rounded-2xl" />
+            <Input id="display_name" value={form.display_name} onChange={set("display_name")} className="h-11 rounded-2xl sm:h-9" />
           </div>
           <div className="space-y-2">
             <Label htmlFor="username">Username</Label>
@@ -120,7 +120,10 @@ export default function ProfileForm() {
               value={form.username}
               onChange={set("username")}
               placeholder="yourname"
-              className="rounded-2xl"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              className="h-11 rounded-2xl sm:h-9"
             />
           </div>
         </div>
@@ -131,16 +134,16 @@ export default function ProfileForm() {
             id="bio"
             value={form.bio}
             onChange={set("bio")}
-            rows={3}
+            rows={4}
             placeholder="Third-year student. I make posters and reels for campus events."
-            className="rounded-2xl"
+            className="min-h-[110px] rounded-2xl"
           />
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="location">Location</Label>
-            <Input id="location" value={form.location} onChange={set("location")} placeholder="Mumbai" className="rounded-2xl" />
+            <Input id="location" value={form.location} onChange={set("location")} placeholder="Mumbai" className="h-11 rounded-2xl sm:h-9" />
           </div>
           <div className="space-y-2">
             <Label htmlFor="interests">Interests</Label>
@@ -149,7 +152,7 @@ export default function ProfileForm() {
               value={form.interests}
               onChange={set("interests")}
               placeholder="streetwear, anime, lo-fi"
-              className="rounded-2xl"
+              className="h-11 rounded-2xl sm:h-9"
             />
           </div>
         </div>
@@ -161,7 +164,7 @@ export default function ProfileForm() {
             value={form.skills}
             onChange={set("skills")}
             placeholder="poster design, reel editing, AI art"
-            className="rounded-2xl"
+            className="h-11 rounded-2xl sm:h-9"
           />
           <p className="text-[11px] text-muted-foreground">Separate with commas. These show on your profile.</p>
         </div>

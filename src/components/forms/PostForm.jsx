@@ -84,7 +84,7 @@ export default function PostForm() {
 
   return (
     <form onSubmit={submit} className="space-y-6">
-      <div className="rounded-[28px] border border-border/80 bg-card p-5">
+      <div className="rounded-[24px] border border-border/80 bg-card p-4 sm:rounded-[28px] sm:p-5">
         <UploadField
           value={mediaUrl}
           onChange={setMediaUrl}
@@ -94,7 +94,7 @@ export default function PostForm() {
         />
       </div>
 
-      <div className="space-y-5 rounded-[28px] border border-border/80 bg-card p-5">
+      <div className="space-y-5 rounded-[24px] border border-border/80 bg-card p-4 sm:rounded-[28px] sm:p-5">
         <div className="space-y-2">
           <Label htmlFor="caption">What did you make?</Label>
           <Textarea
@@ -103,7 +103,7 @@ export default function PostForm() {
             onChange={(event) => setCaption(event.target.value)}
             rows={4}
             placeholder="Made this neon poster for a college fest. Turnaround was two hours."
-            className="rounded-2xl"
+            className="min-h-[130px] rounded-2xl"
           />
         </div>
 
@@ -111,7 +111,7 @@ export default function PostForm() {
           <div className="space-y-2">
             <Label>Skill category</Label>
             <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger className="rounded-2xl">
+              <SelectTrigger className="h-11 rounded-2xl sm:h-9">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -130,13 +130,13 @@ export default function PostForm() {
               value={tags}
               onChange={(event) => setTags(event.target.value)}
               placeholder="poster, neon, fest"
-              className="rounded-2xl"
+              className="h-11 rounded-2xl sm:h-9"
             />
           </div>
         </div>
       </div>
 
-      <div className="space-y-4 rounded-[28px] border border-border/80 bg-card p-5">
+      <div className="space-y-4 rounded-[24px] border border-border/80 bg-card p-4 sm:rounded-[28px] sm:p-5">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-[14px] font-semibold">Add “I can make this for you”</p>
@@ -144,7 +144,7 @@ export default function PostForm() {
               Turn this post into a bookable service with your own price.
             </p>
           </div>
-          <Switch checked={attach} onCheckedChange={setAttach} />
+          <Switch checked={attach} onCheckedChange={setAttach} className="shrink-0 scale-110 sm:scale-100" />
         </div>
 
         {attach && (
@@ -156,7 +156,7 @@ export default function PostForm() {
                 value={serviceTitle}
                 onChange={(event) => setServiceTitle(event.target.value)}
                 placeholder="Custom neon-style event poster"
-                className="rounded-2xl"
+                className="h-11 rounded-2xl sm:h-9"
               />
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -169,7 +169,7 @@ export default function PostForm() {
                   value={price}
                   onChange={(event) => setPrice(event.target.value)}
                   placeholder="800"
-                  className="rounded-2xl"
+                  className="h-11 rounded-2xl sm:h-9"
                 />
               </div>
               <div className="space-y-2">
@@ -180,7 +180,7 @@ export default function PostForm() {
                   min="1"
                   value={days}
                   onChange={(event) => setDays(event.target.value)}
-                  className="rounded-2xl"
+                  className="h-11 rounded-2xl sm:h-9"
                 />
               </div>
             </div>
