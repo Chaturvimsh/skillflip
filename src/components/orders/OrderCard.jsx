@@ -26,8 +26,8 @@ export default function OrderCard({ order, role, onUpdate, onMessage, busy }) {
   }
 
   return (
-    <article className="flex flex-col gap-4 rounded-[26px] border border-border/80 bg-card p-4 sm:flex-row sm:items-start">
-      <div className="h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-secondary">
+    <article className="flex items-start gap-3 rounded-[24px] border border-border/80 bg-card p-4 sm:gap-4 sm:rounded-[26px]">
+      <div className="h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-secondary sm:h-20 sm:w-20">
         {order.service_image ? (
           <Image src={order.service_image} alt={order.service_title} fittingType="fill" className="h-full w-full object-cover" />
         ) : (
@@ -76,7 +76,7 @@ export default function OrderCard({ order, role, onUpdate, onMessage, busy }) {
               disabled={busy}
               onClick={() => onUpdate(order.id, action.status)}
               className={cn(
-                "rounded-full px-3.5 py-1.5 text-[12px] font-semibold transition-transform hover:-translate-y-0.5 disabled:opacity-50",
+                "rounded-full px-4 py-2.5 text-[12px] font-semibold transition-transform hover:-translate-y-0.5 disabled:opacity-50 sm:py-1.5",
                 action.primary ? "bg-foreground text-background" : "border border-foreground/15",
               )}
             >
@@ -86,7 +86,7 @@ export default function OrderCard({ order, role, onUpdate, onMessage, busy }) {
           <button
             type="button"
             onClick={() => onMessage(order)}
-            className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-foreground/15 px-3.5 py-1.5 text-[12px] font-semibold"
+            className="inline-flex items-center gap-1.5 rounded-full border border-foreground/15 px-4 py-2.5 text-[12px] font-semibold sm:ml-auto sm:py-1.5"
           >
             <MessageCircle className="h-3.5 w-3.5" /> Message
           </button>
