@@ -69,22 +69,22 @@ export default function DeliveryDialog({ order, open, onOpenChange, onDone }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90dvh] overflow-y-auto rounded-[24px] sm:max-w-md sm:rounded-[28px]">
-        <DialogHeader>
-          <DialogTitle className="text-xl">Deliver your work</DialogTitle>
-          <DialogDescription>{order.service_title}</DialogDescription>
+      <DialogContent className="max-h-[calc(100dvh-1.5rem)] w-[calc(100vw-1.5rem)] max-w-md overflow-x-hidden overflow-y-auto rounded-[24px] p-5 sm:rounded-[28px] sm:p-6">
+        <DialogHeader className="min-w-0 pr-8">
+          <DialogTitle className="text-xl break-words">Deliver your work</DialogTitle>
+          <DialogDescription className="break-words">{order.service_title}</DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={submit} className="space-y-4">
+        <form onSubmit={submit} className="min-w-0 space-y-4">
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
             disabled={uploading}
-            className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-secondary/50 px-4 py-7 text-muted-foreground transition-colors hover:border-foreground/30 disabled:opacity-60"
+            className="flex w-full max-w-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-secondary/50 px-3 py-6 text-center text-muted-foreground transition-colors hover:border-foreground/30 disabled:opacity-60 sm:px-4 sm:py-7"
           >
             {uploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Paperclip className="h-5 w-5" />}
-            <span className="text-[12px] font-medium">{uploading ? "Uploading…" : "Attach your files"}</span>
-            <span className="text-[11px]">Images, PDF, ZIP, docs or video · up to 5 files</span>
+            <span className="text-[12px] font-medium break-words">{uploading ? "Uploading…" : "Attach your files"}</span>
+            <span className="text-[11px] leading-relaxed break-words">Images, PDF, ZIP, docs or video · up to 5 files</span>
           </button>
           <input
             ref={inputRef}
@@ -96,7 +96,7 @@ export default function DeliveryDialog({ order, open, onOpenChange, onDone }) {
           />
 
           {files.length > 0 && (
-            <ul className="space-y-2">
+            <ul className="min-w-0 space-y-2">
               {files.map((file) => (
                 <li key={file.file_uri} className="flex items-center gap-2 rounded-xl bg-secondary/70 px-3 py-2">
                   <span className="min-w-0 flex-1 truncate text-[12px] font-medium">{file.file_name}</span>
@@ -118,14 +118,14 @@ export default function DeliveryDialog({ order, open, onOpenChange, onDone }) {
             onChange={(event) => setMessage(event.target.value)}
             rows={3}
             placeholder="Here's the final poster plus the source file. Tweak anything you like."
-            className="min-h-[100px] rounded-2xl"
+            className="min-h-[100px] w-full max-w-full rounded-2xl"
           />
 
-          <p className="text-[11px] leading-relaxed text-muted-foreground">
+          <p className="text-[11px] leading-relaxed break-words text-muted-foreground">
             Only you and the buyer can open these files. Sending a delivery moves the order to “Awaiting approval”.
           </p>
 
-          <Button type="submit" disabled={saving || uploading} className="h-12 w-full rounded-full text-[15px]">
+          <Button type="submit" disabled={saving || uploading} className="h-12 w-full max-w-full rounded-full text-[15px] whitespace-normal">
             {saving ? "Sending…" : "Send delivery"}
           </Button>
         </form>
