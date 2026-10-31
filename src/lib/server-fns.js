@@ -84,12 +84,16 @@ export const getServiceDetail = createServerFn({ method: "GET" })
     });
     if (!service) return null;
 
-    const page = await base.entities.Service.filter(
-      { creator_username: service.creator_username },
-      { sort: "-created_date", limit: 6 },
-    );
+    const [page, posts] = await Promise.all([
+      base.entities.Service.filter({ creator_username: service.creator_username }, { sort: "-created_date", limit: 6 }),
+      base.entities.Post.filter({ creator_username: service.creator_username }, { sort: "-created_date", limit: 6 }),
+    ]);
 
-    return { service, more: (page?.items ?? []).filter((item) => item.id !== service.id) };
+    return {
+      service,
+      more: (page?.items ?? []).filter((item) => item.id !== service.id),
+      samples: posts?.items ?? [],
+    };
   });
 
 export const getRequests = createServerFn({ method: "GET" })

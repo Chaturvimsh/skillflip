@@ -13,7 +13,7 @@ import { getServiceDetail } from "@/lib/server-fns";
 import { startConversation } from "@/lib/skillflip";
 import { useAuthAction } from "@/lib/useAuthAction";
 
-export const Route = createFileRoute("/_site/skills/$serviceId")({
+export const Route = createFileRoute("/_site/skills_/$serviceId")({
   loader: async ({ params }) => {
     const detail = await getServiceDetail({ data: { serviceId: params.serviceId } });
     if (!detail) throw notFound();
@@ -29,7 +29,7 @@ export const Route = createFileRoute("/_site/skills/$serviceId")({
 });
 
 function ServiceDetailPage() {
-  const { service, more } = Route.useLoaderData();
+  const { service, more, samples } = Route.useLoaderData();
   const [open, setOpen] = useState(false);
   const { user } = useAuth();
   const guard = useAuthAction();
@@ -150,6 +150,38 @@ function ServiceDetailPage() {
           </Link>
         </div>
       </div>
+
+      {samples?.length > 0 && (
+        <section className="space-y-4 pt-2">
+          <h2 className="text-lg font-bold">Work samples</h2>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 lg:grid-cols-4">
+            {samples.map((post) => (
+              <Link
+                key={post.id}
+                to="/post/$postId"
+                params={{ postId: post.id }}
+                className="group overflow-hidden rounded-2xl border border-border/80 bg-card"
+              >
+                {post.media_type === "video" ? (
+                  <video
+                    src={post.media_url}
+                    muted
+                    playsInline
+                    className="aspect-square w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                ) : (
+                  <Image
+                    src={post.media_url}
+                    alt={post.caption || "Work sample"}
+                    fittingType="fill"
+                    className="aspect-square w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                )}
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {more.length > 0 && (
         <section className="space-y-4 pt-2">
