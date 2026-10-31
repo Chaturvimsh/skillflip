@@ -48,6 +48,44 @@
         "declined"
       ],
       "default": "requested"
+    },
+    "deliverables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "file_uri": {
+            "type": "string"
+          },
+          "file_name": {
+            "type": "string"
+          },
+          "content_type": {
+            "type": "string"
+          },
+          "uploaded_at": {
+            "type": "string"
+          },
+          "uploaded_by": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "delivery_message": {
+      "type": "string"
+    },
+    "delivered_at": {
+      "type": "string"
+    },
+    "approved_at": {
+      "type": "string"
+    },
+    "revision_note": {
+      "type": "string"
+    },
+    "revision_requested_at": {
+      "type": "string"
     }
   },
   "required": [

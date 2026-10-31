@@ -1,29 +1,16 @@
 import { Link } from "@tanstack/react-router";
-import { CalendarClock, MessageCircle } from "lucide-react";
+import { CalendarClock } from "lucide-react";
 import { Image } from "@/components/ui/image";
+import Deliverables from "@/components/orders/Deliverables";
+import OrderActions from "@/components/orders/OrderActions";
 import { ORDER_FLOW } from "@/lib/constants";
 import { formatDate, formatINR } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
-export default function OrderCard({ order, role, onUpdate, onMessage, busy }) {
+export default function OrderCard({ order, role, onUpdate, onMessage, onApprove, onRefresh, busy }) {
   const status = ORDER_FLOW[order.status] ?? ORDER_FLOW.requested;
   const counterpart = role === "seller" ? order.buyer_name : order.seller_name;
   const counterpartUsername = role === "seller" ? order.buyer_username : order.seller_username;
-
-  const actions = [];
-  if (role === "seller" && order.status === "requested") {
-    actions.push({ label: "Accept", status: "in_progress", primary: true });
-    actions.push({ label: "Decline", status: "declined" });
-  }
-  if (role === "seller" && order.status === "in_progress") {
-    actions.push({ label: "Mark delivered", status: "delivered", primary: true });
-  }
-  if (role === "buyer" && order.status === "delivered") {
-    actions.push({ label: "Approve & complete", status: "completed", primary: true });
-  }
-  if (role === "buyer" && order.status === "requested") {
-    actions.push({ label: "Cancel request", status: "declined" });
-  }
 
   return (
     <article className="flex items-start gap-3 rounded-[24px] border border-border/80 bg-card p-4 sm:gap-4 sm:rounded-[26px]">
@@ -59,6 +46,8 @@ export default function OrderCard({ order, role, onUpdate, onMessage, busy }) {
 
         {order.notes && <p className="line-clamp-2 rounded-xl bg-secondary/70 px-3 py-2 text-[12px] text-foreground/75">{order.notes}</p>}
 
+        <Deliverables order={order} />
+
         <div className="flex flex-wrap items-center gap-3 text-[11px] text-muted-foreground">
           <span className="font-display text-sm font-bold text-foreground">{formatINR(order.price)}</span>
           {order.due_date && (
@@ -68,29 +57,15 @@ export default function OrderCard({ order, role, onUpdate, onMessage, busy }) {
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 pt-1">
-          {actions.map((action) => (
-            <button
-              key={action.status}
-              type="button"
-              disabled={busy}
-              onClick={() => onUpdate(order.id, action.status)}
-              className={cn(
-                "rounded-full px-4 py-2.5 text-[12px] font-semibold transition-transform hover:-translate-y-0.5 disabled:opacity-50 sm:py-1.5",
-                action.primary ? "bg-foreground text-background" : "border border-foreground/15",
-              )}
-            >
-              {action.label}
-            </button>
-          ))}
-          <button
-            type="button"
-            onClick={() => onMessage(order)}
-            className="inline-flex items-center gap-1.5 rounded-full border border-foreground/15 px-4 py-2.5 text-[12px] font-semibold sm:ml-auto sm:py-1.5"
-          >
-            <MessageCircle className="h-3.5 w-3.5" /> Message
-          </button>
-        </div>
+        <OrderActions
+          order={order}
+          role={role}
+          busy={busy}
+          onUpdate={onUpdate}
+          onMessage={onMessage}
+          onApprove={onApprove}
+          onRefresh={onRefresh}
+        />
       </div>
     </article>
   );

@@ -6,6 +6,7 @@ import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import EmptyState from "@/components/EmptyState";
 import OrderCard from "@/components/orders/OrderCard";
+import { approveDelivery } from "@/lib/order-fns";
 import { startConversation } from "@/lib/skillflip";
 
 export const Route = createFileRoute("/_authed/orders")({
@@ -38,6 +39,19 @@ function OrdersPage() {
       toast.success(status === "completed" ? "Order completed" : "Order updated");
     } catch {
       toast.error("Couldn't update this order.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const approve = async (id) => {
+    setBusy(true);
+    try {
+      await approveDelivery({ data: { orderId: id } });
+      await load();
+      toast.success("Delivery approved — order completed");
+    } catch (error) {
+      toast.error(error?.status === 409 ? "There's no delivery to approve yet." : "Couldn't approve this delivery.");
     } finally {
       setBusy(false);
     }
@@ -89,7 +103,16 @@ function OrdersPage() {
         ) : (
           <div className="space-y-3">
             {buying.map((order) => (
-              <OrderCard key={order.id} order={order} role="buyer" busy={busy} onUpdate={update} onMessage={message} />
+              <OrderCard
+                key={order.id}
+                order={order}
+                role="buyer"
+                busy={busy}
+                onUpdate={update}
+                onMessage={message}
+                onApprove={approve}
+                onRefresh={load}
+              />
             ))}
           </div>
         )}
@@ -111,7 +134,16 @@ function OrdersPage() {
         ) : (
           <div className="space-y-3">
             {selling.map((order) => (
-              <OrderCard key={order.id} order={order} role="seller" busy={busy} onUpdate={update} onMessage={message} />
+              <OrderCard
+                key={order.id}
+                order={order}
+                role="seller"
+                busy={busy}
+                onUpdate={update}
+                onMessage={message}
+                onApprove={approve}
+                onRefresh={load}
+              />
             ))}
           </div>
         )}
