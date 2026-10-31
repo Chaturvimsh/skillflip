@@ -95,6 +95,10 @@ export const acceptProposal = createServerFn({ method: "POST" })
     if (proposal.buyer_id !== context.user.id) {
       throw fail(403, "Only the person who posted the task can accept this proposal");
     }
+    const task = await loadOr404(context, "SkillRequest", proposal.request_id, "This task is no longer available");
+    if (task.author_id !== context.user.id) {
+      throw fail(403, "Only the person who posted the task can accept this proposal");
+    }
     // Repeated clicks land here: the order already exists, hand back the same one.
     if (proposal.order_id) return { orderId: proposal.order_id, alreadyAccepted: true };
     if (proposal.status !== "pending") throw fail(409, "This proposal is already closed");
@@ -106,7 +110,7 @@ export const acceptProposal = createServerFn({ method: "POST" })
       return { orderId: existingOrder.id, alreadyAccepted: true };
     }
 
-    const request = await loadOr404(context, "SkillRequest", proposal.request_id, "This task is no longer available");
+    const request = task;
     const conversation = await loadOr404(context, "Conversation", proposal.conversation_id, "Conversation not found");
     const creator = participantSide(conversation, proposal.creator_id);
 
@@ -152,6 +156,11 @@ export const rejectProposal = createServerFn({ method: "POST" })
       throw fail(403, "Only the person who posted the task can reject this proposal");
     }
     if (proposal.status !== "pending" || proposal.order_id) throw fail(409, "This proposal is already closed");
+
+    const task = await loadOr404(context, "SkillRequest", proposal.request_id, "This task is no longer available");
+    if (task.author_id !== context.user.id) {
+      throw fail(403, "Only the person who posted the task can reject this proposal");
+    }
 
     await base.entities.Proposal.update(proposal.id, { status: "rejected" });
     await touchConversation(context, proposal.conversation_id, "Proposal declined").catch(() => {});
