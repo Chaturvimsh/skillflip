@@ -35,12 +35,13 @@ function ExplorePage() {
       <ExploreHero />
 
       <section id="feed" className="space-y-4 scroll-mt-24">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-3">
           <div>
             <h2 className="text-xl font-bold md:text-2xl">Discover creations</h2>
             <p className="text-[13px] text-muted-foreground">Real work from people you can hire in a few taps.</p>
           </div>
           <CategoryChips
+            className="w-full sm:w-auto"
             value={category}
             onChange={(next) => navigate({ to: "/", search: { category: next }, replace: true })}
           />

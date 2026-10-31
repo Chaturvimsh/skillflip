@@ -56,7 +56,7 @@ function MessagesPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-[320px_minmax(0,1fr)]">
-        <aside className={`rounded-[28px] border border-border/80 bg-card p-2 ${c ? "hidden md:block" : ""}`}>
+        <aside className={`rounded-[28px] border border-border/80 bg-card p-2 ${active ? "hidden md:block" : ""}`}>
           <ThreadList
             conversations={conversations}
             me={user}
@@ -65,7 +65,7 @@ function MessagesPage() {
           />
         </aside>
 
-        <section className="overflow-hidden rounded-[28px] border border-border/80 bg-card">
+        <section className={`overflow-hidden rounded-[28px] border border-border/80 bg-card ${active ? "" : "hidden md:block"}`}>
           {active ? (
             <ChatPanel
               key={active.id}
@@ -75,7 +75,7 @@ function MessagesPage() {
               onSent={load}
             />
           ) : (
-            <div className="grid h-[68vh] place-items-center px-6 text-center">
+            <div className="grid h-[calc(100dvh-15rem)] place-items-center px-6 text-center md:h-[68vh]">
               <div className="space-y-2">
                 <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-secondary">
                   <MessageCircle className="h-5 w-5" />

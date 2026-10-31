@@ -55,10 +55,10 @@ export default function ChatPanel({ conversation, me, onBack, onSent }) {
   };
 
   return (
-    <div className="flex h-[68vh] flex-col">
+    <div className="flex h-[calc(100dvh-15rem)] flex-col md:h-[68vh]">
       <div className="flex items-center gap-3 border-b border-border/70 px-4 py-3">
         {onBack && (
-          <button type="button" onClick={onBack} className="grid h-8 w-8 place-items-center rounded-full hover:bg-secondary">
+          <button type="button" onClick={onBack} className="grid h-10 w-10 shrink-0 place-items-center rounded-full hover:bg-secondary md:h-8 md:w-8">
             <ArrowLeft className="h-4 w-4" />
           </button>
         )}

@@ -6,17 +6,17 @@ const TEASER = ["Make me a poster", "Edit my reel", "Design my deck", "Build my 
 
 export default function ExploreHero() {
   return (
-    <section className="relative overflow-hidden rounded-[32px] bg-foreground px-6 py-12 text-background md:px-12 md:py-16">
+    <section className="relative overflow-hidden rounded-[26px] bg-foreground px-5 py-9 text-background sm:px-8 md:rounded-[32px] md:px-12 md:py-16">
       <div className="pointer-events-none absolute -right-24 -top-28 h-72 w-72 rounded-full bg-primary/70 blur-[90px]" />
       <div className="pointer-events-none absolute -bottom-24 right-1/3 h-56 w-56 rounded-full bg-accent/40 blur-[80px]" />
 
-      <div className="relative flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
+      <div className="relative flex flex-col gap-8 md:flex-row md:items-end md:justify-between md:gap-10">
         <div className="max-w-2xl space-y-5">
           <span className="inline-flex items-center gap-2 rounded-full border border-background/20 bg-background/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] backdrop-blur">
             <Sparkles className="h-3.5 w-3.5 text-accent" /> Social marketplace for everyday skills
           </span>
 
-          <h1 className="text-[38px] font-extrabold leading-[0.93] tracking-[-0.04em] text-balance md:text-[64px]">
+          <h1 className="text-[32px] font-extrabold leading-[0.96] tracking-[-0.04em] text-balance sm:text-[38px] md:text-[64px] md:leading-[0.93]">
             Your skills.
             <br />
             <span className="text-accent">Your hustle.</span>
