@@ -107,6 +107,20 @@ export const getRequests = createServerFn({ method: "GET" })
     return page?.items ?? [];
   });
 
+export const getSavedPosts = createServerFn({ method: "GET" }).handler(async ({ context }) => {
+  const base = context.getBase44();
+  const saves = await base.entities.SavedPost.list("-created_date", 100);
+  const saveRows = Array.isArray(saves) ? saves : saves?.items ?? [];
+  const savedIds = saveRows.map((row) => row.post_id).filter(Boolean);
+  if (!savedIds.length) return { posts: [], likeCounts: {}, commentCounts: {}, savedIds: [] };
+
+  const page = await base.entities.Post.filter({ id: { $in: savedIds } }, { limit: 100 });
+  const order = new Map(savedIds.map((id, index) => [id, index]));
+  const posts = (page?.items ?? []).sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
+  const counts = await attachCounts(base, posts);
+  return { ...counts, savedIds };
+});
+
 export const getProfilePage = createServerFn({ method: "GET" })
   .validator(z.object({ username: z.string() }))
   .handler(async ({ data, context }) => {

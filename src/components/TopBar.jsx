@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { Compass, LogOut, MessageCircle, Package, Plus, Settings, Wallet, User } from "lucide-react";
+import { Bookmark, LogOut, MessageCircle, Package, Plus, Settings, Wallet, User } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import { useMyProfile } from "@/lib/useMyProfile";
 import Avatar from "@/components/Avatar";
@@ -96,6 +96,9 @@ export default function TopBar() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => (profile ? navigate(meHref) : navigate({ to: "/settings" }))}>
                   <User className="mr-2 h-4 w-4" /> My profile
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate({ to: "/saved" })}>
+                  <Bookmark className="mr-2 h-4 w-4" /> Saved posts
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate({ to: "/orders" })}>
                   <Package className="mr-2 h-4 w-4" /> My orders

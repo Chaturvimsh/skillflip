@@ -1,5 +1,5 @@
 import { Link, createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
-import { MapPin, MessageCircle, Pencil, Sparkles } from "lucide-react";
+import { Bookmark, MapPin, MessageCircle, Pencil, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import Avatar from "@/components/Avatar";
 import EmptyState from "@/components/EmptyState";
@@ -65,16 +65,24 @@ function ProfilePage() {
         </div>
 
         <div className="px-5 pb-6 md:px-8">
-          <div className="-mt-10 flex flex-wrap items-end justify-between gap-4">
-            <Avatar name={profile.display_name} src={profile.avatar_url} size="xl" className="ring-4 ring-card" />
-            <div className="flex items-center gap-2 pb-1">
+          <div className="relative z-10 -mt-10 flex flex-wrap items-end justify-between gap-4">
+            <Avatar name={profile.display_name} src={profile.avatar_url} size="xl" className="shrink-0 ring-4 ring-card" />
+            <div className="flex flex-wrap items-center gap-2 pb-1">
               {isMe ? (
-                <Link
-                  to="/settings"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-foreground/15 px-4 py-2.5 text-[13px] font-semibold transition-colors hover:bg-secondary sm:py-2"
-                >
-                  <Pencil className="h-3.5 w-3.5" /> Edit profile
-                </Link>
+                <>
+                  <Link
+                    to="/saved"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-foreground/15 px-4 py-2.5 text-[13px] font-semibold transition-colors hover:bg-secondary sm:py-2"
+                  >
+                    <Bookmark className="h-3.5 w-3.5" /> Saved
+                  </Link>
+                  <Link
+                    to="/settings"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-foreground/15 px-4 py-2.5 text-[13px] font-semibold transition-colors hover:bg-secondary sm:py-2"
+                  >
+                    <Pencil className="h-3.5 w-3.5" /> Edit profile
+                  </Link>
+                </>
               ) : (
                 <button
                   type="button"
