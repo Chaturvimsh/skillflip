@@ -11,6 +11,12 @@
     "service_image": {
       "type": "string"
     },
+    "request_id": {
+      "type": "string"
+    },
+    "proposal_id": {
+      "type": "string"
+    },
     "buyer_id": {
       "type": "string"
     },

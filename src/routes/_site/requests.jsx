@@ -40,6 +40,7 @@ function RequestsPage() {
         avatar: request.author_avatar,
       },
       contextTitle: request.title,
+      requestId: request.id,
     });
     if (id) navigate({ to: "/messages", search: { c: id } });
   };

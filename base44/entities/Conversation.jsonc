@@ -35,6 +35,9 @@
     "context_title": {
       "type": "string"
     },
+    "request_id": {
+      "type": "string"
+    },
     "last_message": {
       "type": "string"
     },

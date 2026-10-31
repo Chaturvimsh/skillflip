@@ -15,12 +15,36 @@
       "type": "string"
     },
     "body": {
-      "type": "string"
+      "type": "string",
+      "default": ""
+    },
+    "attachment": {
+      "type": "object",
+      "properties": {
+        "file_uri": {
+          "type": "string"
+        },
+        "file_name": {
+          "type": "string"
+        },
+        "content_type": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "image",
+            "pdf"
+          ]
+        },
+        "size": {
+          "type": "number"
+        }
+      }
     }
   },
   "required": [
-    "conversation_id",
-    "body"
+    "conversation_id"
   ],
   "rls": {
     "read": {

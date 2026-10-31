@@ -30,7 +30,7 @@ export async function ensureProfile(user) {
   });
 }
 
-export async function startConversation({ me, other, contextTitle }) {
+export async function startConversation({ me, other, contextTitle, requestId }) {
   if (!me?.id || !other?.id) return null;
   if (me.id === other.id) return null;
 
@@ -42,7 +42,9 @@ export async function startConversation({ me, other, contextTitle }) {
     (conversation) =>
       Array.isArray(conversation.participant_ids) &&
       conversation.participant_ids.includes(me.id) &&
-      conversation.participant_ids.includes(other.id),
+      conversation.participant_ids.includes(other.id) &&
+      // A task keeps its own thread, so a second task with the same person stays separate.
+      (requestId ? conversation.request_id === requestId : !conversation.request_id),
   );
   if (already) return already.id;
 
@@ -62,23 +64,31 @@ export async function startConversation({ me, other, contextTitle }) {
     user_b_username: other.username || "",
     user_b_avatar: other.avatar || "",
     context_title: contextTitle || "",
+    request_id: requestId || "",
     last_message: "",
     last_message_at: new Date().toISOString(),
   });
   return conversation.id;
 }
 
-export async function sendMessage({ conversation, me, body }) {
+// Chat attachments are private: only the two people in the thread can open them.
+export async function uploadChatFile(file) {
+  const { file_uri } = await base44.integrations.Core.UploadPrivateFile({ file });
+  return file_uri;
+}
+
+export async function sendMessage({ conversation, me, body, attachment }) {
   const otherId = conversation.user_a_id === me.id ? conversation.user_b_id : conversation.user_a_id;
   await base44.entities.Message.create({
     conversation_id: conversation.id,
     sender_id: me.id,
     sender_name: me.full_name || "Me",
     recipient_id: otherId,
-    body,
+    body: body || "",
+    ...(attachment ? { attachment } : {}),
   });
   await base44.entities.Conversation.update(conversation.id, {
-    last_message: body,
+    last_message: body || (attachment ? `📎 ${attachment.file_name}` : ""),
     last_message_at: new Date().toISOString(),
   });
 }
